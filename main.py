@@ -41,8 +41,19 @@ tickets_table = sqlalchemy.Table(
 # engine = sqlalchemy.create_engine(
 #     DATABASE_URL.replace("postgresql+asyncpg", "postgresql"),
 #     connect_args={"sslmode": "require"}
-# )
-engine = sqlalchemy.create_engine(DATABASE_URL)
+# # )
+# engine = sqlalchemy.create_engine(DATABASE_URL)
+# metadata.create_all(engine)
+def get_sync_url(url: str) -> str:
+    return url.split("?")[0].replace("postgresql+asyncpg", "postgresql")
+
+engine = sqlalchemy.create_engine(
+    get_sync_url(DATABASE_URL),
+    connect_args={
+        "sslmode": "require",
+        "connect_timeout": 10,
+    }
+)
 metadata.create_all(engine)
 
 @asynccontextmanager
