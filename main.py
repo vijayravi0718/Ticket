@@ -36,9 +36,13 @@ tickets_table = sqlalchemy.Table(
     sqlalchemy.Column("updated_at", sqlalchemy.DateTime, nullable=True),
 )
 
-engine = sqlalchemy.create_engine(DATABASE_URL)
+# engine = sqlalchemy.create_engine(DATABASE_URL)
+# metadata.create_all(engine)
+engine = sqlalchemy.create_engine(
+    DATABASE_URL.replace("postgresql+asyncpg", "postgresql"),
+    connect_args={"sslmode": "require"}
+)
 metadata.create_all(engine)
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
